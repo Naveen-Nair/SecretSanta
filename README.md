@@ -8,7 +8,7 @@ Basic Mode:
 
 > Users should be able to create an exchange group (a group in which people joined will exchange gifts between them). Get information like name, date, registration date, budget, location, etc
 
-• Generate a code which can be used by users to join an exchange.
+> Generate a code which can be used by users to join an exchange.
 
 • Create a detailed page for each exchange which is visible to the participants, display details collected while creating it and the list of participants.
 

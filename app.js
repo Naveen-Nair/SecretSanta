@@ -54,7 +54,7 @@ app.post("/register",(req,res)=>{
     } else{
       if(user){//if user exists
         console.log(user)
-        res.send("<h1>User Exists!</h1>"+"<a href='/register'>Go Back! </a>")
+        res.send("<h1>User Exists!</h1>"+"<button><a href='/register'>Go Back! </a></button>")
 
       }else{//if user doesnt exist, ie new user can be created
         const user = new User ({
@@ -88,11 +88,11 @@ app.post('/login',(req,res)=>{
         }else{//if password fails
           res.send(
             "<h1>Incorrect password!</h1>"+
-            "<a href='/login'>Go Back!</a>")
+            "<button><a href='/login'>Go Back!</a></button>")
         }
 
       }else{//if the user with the same email does not exist
-        res.send("<h1>User Doesn't Exist</h1>"+"<a href='/register'>Register Now!</a>")
+        res.send("<h1>User Doesn't Exist</h1>"+"<button><a href='/register'>Register Now!</a></button>")
       }
     }
   })
@@ -170,7 +170,7 @@ app.post('/createGroup',(req,res)=>{
       console.log(err)
     }else{
       if(group){//if group exists
-        res.send('<div>Group name already exists! try again</div>'+'<a href="/createGroup">Go back</a>')
+        res.send('<div>Group name already exists! try again</div>'+'<button><a href="/createGroup">Go back</a></button>')
       }else{
         console.log(currentUserId)
 
@@ -229,7 +229,7 @@ app.post('/joinGroup',(req,res)=>{
           res.send('done')
 
         }else{
-          res.send('No such group')
+          res.send('<h1>No such group</h1>'+'<button><a href="/start">Go Back</a></button')
         }
       }
     })
