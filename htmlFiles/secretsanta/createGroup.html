@@ -13,11 +13,11 @@
       </div>
       <div class="">
         <label for="">Date : </label>
-        <input type="date" name="date" value="" required>
+        <input type="date" name="date" value="" required pattern="\d{4}-\d{2}-\d{2}">
       </div>
       <div class="">
         <label for="">Registration date : </label>
-        <input type="date" name="regisDate" value="" required>
+        <input type="date" name="regisDate" value=""  required pattern="\d{4}-\d{2}-\d{2}">
       </div>
       <div class="">
         <label for="">Budget : </label>
@@ -30,6 +30,7 @@
       <button type="submit" name="submit">Submit</button>
 
     </form>
-
+    <br />
+    <button><a href="/start">back</a></button>
   </body>
 </html>
