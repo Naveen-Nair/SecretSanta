@@ -33,22 +33,23 @@ app.post("/register",(req,res)=>{
   const email = req.body.email;
   const password = md5(req.body.password);
 
-  User.findOne({email:email},(err,user)=>{
+  User.findOne({email:email},(err,user)=>{//check if any user are there who has the same email
     if(err){
       console.log(err)
     } else{
-      if(user){
+      if(user){//if user exists
         console.log(user)
         res.send("User Exists!")
-      }else{
+
+      }else{//if user doesnt exist, ie new user can be created
         const user = new User ({
           email:email,
           password:password
         })
         user.save()
-        res.sendFile(__dirname+'/htmlFiles/secretsanta/start.html')
+        res.sendFile(__dirname+'/htmlFiles/secretsanta/start.html') //go to the start of the page
 
-              }
+      }
     }
   })
 });
@@ -57,19 +58,19 @@ app.post('/login',(req,res)=>{
   const email = req.body.email
   const password = md5(req.body.password)
 
-  User.findOne({email:email},(err,user)=>{
+  User.findOne({email:email},(err,user)=>{//check if users exist with the email
     if(err){
       console.log(err)
     } else{
-      if(user){
-        if(user.password === password){
+      if(user){//if user exists
+        if(user.password === password){//if the hashed password match
           console.log("user authenticated")
-          res.sendFile(__dirname+'/htmlFiles/secretsanta/start.html')
-        }else{
+          res.sendFile(__dirname+'/htmlFiles/secretsanta/start.html') //go to the start of the page
+        }else{//if password fails
           res.send("Incorrect password! Try again!")
         }
 
-      }else{
+      }else{//if the user with the same email does not exist
         res.send("User Doesn't Exist")
       }
     }
