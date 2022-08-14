@@ -1,0 +1,19 @@
+{
+  "name": "secretsanta",
+  "version": "1.0.0",
+  "description": "Spider inductions, webdev task 2",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Naveen-Nair/SecretSanta.git"
+  },
+  "author": "Naveen Suresh Nair",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Naveen-Nair/SecretSanta/issues"
+  },
+  "homepage": "https://github.com/Naveen-Nair/SecretSanta#readme"
+}
