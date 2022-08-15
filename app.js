@@ -469,8 +469,9 @@ app.post('/yourGroupinfo/invite/person',(req,res)=>{
       }else{
         if(user){
           //the invites is sent to the
-
-          user.invite.push(groupInvite)
+          let inviteGr = {groupRequestId: requestId}
+          user.invite.push(inviteGr)
+          user.save();
           res.render('error',{errorName:'Invited!', locRoute:'/yourGroup'})
 
         }else{
@@ -485,7 +486,115 @@ app.post('/yourGroupinfo/invite/person',(req,res)=>{
   }
 })
 
+//******************************************************************************************
+app.get('/profile',(req,res)=>{
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err)
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
+    }else{
+      if(user){
+        res.render('h_profile', {invites : user.invite, name:user.username})
 
+      }else{
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }
+    }
+  })
+
+})
+
+app.post('/profile',(req,res)=>{
+  let remove = req.body.remove
+  let join = req.body.join
+
+  if(remove){
+    Group.findOne({requestid:remove},(err,group)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(group){
+          User.findOne({username:currentUserName},(err,user)=>{
+            if(err){
+              console.log(err)
+            }else{
+              if(user){
+                for(let i=0; i<user.invite.length; i++){
+                  if(user.invite[i].groupRequestId===group.requestid){
+
+                      //switch the invite to the last
+                      let temp = user.invite[user.invite.length-1]
+                      user.invite[user.invite.length-1] = user.invite[i]
+                      user.invite[i] = temp
+                      //pop the last
+                      user.invite.pop();
+                      //save the invites
+                      user.save();
+
+                      res.redirect('/start')
+
+                  }
+                }
+              }
+            }
+          })
+
+
+        }else{
+          res.render('error',{errorName:'Error!', locRoute:'/login'})
+        }
+      }
+    })
+
+  }else if(join){
+    Group.findOne({requestid:join},(err,group)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(group){
+          User.findOne({username:currentUserName},(err,user)=>{
+            if(err){
+              console.log(err)
+            }else{
+              if(user){
+                for(let i=0; i<user.invite.length; i++){
+                  if(user.invite[i].groupRequestId===group.requestid){
+
+                      //switch the invite to the last
+                      let temp = user.invite[user.invite.length-1]
+                      user.invite[user.invite.length-1] = user.invite[i]
+                      user.invite[i] = temp
+                      //pop the last
+                      user.invite.pop();
+                      //save the invites
+                      user.save();
+
+                      let a = {
+                        userid: currentUserId,
+                        username: currentUserName
+                      }
+                      group.users.push(a)
+                      group.save()
+
+
+                      res.redirect('/start')
+
+                  }
+                }
+              }
+            }
+          })
+        }
+      }
+    })
+
+
+  }else {
+    res.render('error',{errorName:'Error!', locRoute:'/login'})
+  }
+})
 
 
 
