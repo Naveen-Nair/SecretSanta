@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
   username:String,
   email: String,
   password: String,
+  invite: [{
+    groupRequestId: String,
+  }]
+
+
 })
 
 const User = mongoose.model('User',userSchema)
@@ -92,9 +97,6 @@ app.post("/register",(req,res)=>{
           }
         })
 
-
-
-
       }
     }
   })
@@ -154,8 +156,6 @@ const Group = mongoose.model('Group',groupSchema)
 //******************************************************************************************
 //get and post request to start.html
 app.get('/start',(req,res)=>{
-  console.log(currentUserId)
-
   User.findOne({_id:currentUserId},(err,user)=>{
     if(err){
       console.log(err);
@@ -222,7 +222,6 @@ app.post('/createGroup',(req,res)=>{
       if(group){//if group exists
         res.render('error',{errorName:'Group name already Exists!', locRoute:'/createGroup'})
       }else{//if group doesnt exist
-        console.log(currentUserId)
 
               const group = new Group({
                 name:name,
@@ -306,7 +305,6 @@ app.post('/joinGroup',(req,res)=>{
 app.get('/yourGroup',(req,res)=>{
   User.findOne({_id:currentUserId},(err,user)=>{
     if(err){
-      console.log('heeelllooo')
       res.render('error',{errorName:'Error!', locRoute:'/login'})
 
     }else{
@@ -339,7 +337,6 @@ app.get('/yourGroup',(req,res)=>{
                 }
 
               }
-              console.log(yourGroups)
               res.render('ss_yourGroup',{groups:yourGroups})
 
             }else{
@@ -401,12 +398,91 @@ app.post('/yourGroupInfo',(req,res)=>{
 //******************************************************************************************
 //to invite to your group
 
+//normally cant go to the page
 app.get('/yourGroupInfo/invite',(req,res)=>{
-  res.render('error',{errorName:'Error!', locRoute:'/start'})
+  res.render('error',{errorName:'Error!', locRoute:'/login'})
 })
 
+//post reques from the ss_yourGroupInfo
 app.post('/yourGroupInfo/invite',(req,res)=>{
+  let requestId = req.body.requestId
 
+  Group.findOne({requestid:requestId},(err,group)=>{
+    if(err){
+      console.log(err)
+      res.render('error',{errorName:'Error!', locRoute:'/start'})
+    }else{
+      if(group){//the group for which the invite is to Exists
+        //now we check for input if the person Exists
+
+
+        res.render('ss_yourGroupInfo_invite',{id:group.requestid})
+
+      }else{
+        res.render('error',{errorName:'Error!', locRoute:'/yourGroup'})
+      }
+    }
+  })
+
+})
+
+//******************************************************************************************
+//to invite a person to the group
+
+//normally cant go to the page
+app.get('/yourGroupInfo/invite/person',(req,res)=>{
+  res.render('error',{errorName:'Error!', locRoute:'/login'})
+})
+
+//post request from the ss_yourGroupInfo_invite
+app.post('/yourGroupinfo/invite/person',(req,res)=>{
+  let email = req.body.email
+  let username = req.body.username
+  let requestId = String(req.body.id) //the value of the button is the request id of the group
+
+  if(email){
+    User.findOne({email:email},(err,user)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(user){
+          //the invites is sent to the
+          let inviteGr = {groupRequestId: requestId}
+          user.invite.push(inviteGr)
+          user.save();
+
+          res.render('error',{errorName:'Invited!', locRoute:'/yourGroup'})
+
+
+        }else{
+          res.render('error',{errorName:'User Not Found!', locRoute:'/yourGroup'})
+        }
+      }
+    })
+
+  }else if(username){
+    User.findOne({username:username},(err,user)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(user){
+          //the invites is sent to the
+
+          user.invite.push(groupInvite)
+          res.render('error',{errorName:'Invited!', locRoute:'/yourGroup'})
+
+        }else{
+          res.render('error',{errorName:'User Not Found!', locRoute:'/yourGroup'})
+        }
+      }
+    })
+
+
+  }else{//both username and email are empty
+    res.render('error',{errorName:'Enter Username / Email', locRoute:'/yourGroup'})
+  }
 })
 
 
