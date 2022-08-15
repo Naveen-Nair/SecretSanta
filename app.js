@@ -328,7 +328,12 @@ app.get('/yourGroup',(req,res)=>{
                   if(group.users[j].userid==currentUserId){
                     //this user is a part of the group
 
-                   yourGroups.push(group.name)
+                    let a = {
+                      name:group.name,
+                      id:group.requestid
+                    }
+
+                   yourGroups.push(a)
 
                   }
                 }
@@ -359,9 +364,9 @@ app.get('/yourGroupInfo',(req,res)=>{
 })
 
 app.post('/yourGroupInfo',(req,res)=>{
-  let groupName = req.body.list;
-  console.log(groupName)
-  Group.findOne({name:groupName},(err,group)=>{
+  let requestId = req.body.requestId;
+
+  Group.findOne({requestid:requestId},(err,group)=>{
 
     if(err){
       res.render('error',{errorName:'Error!', locRoute:'/yourGroup'})
