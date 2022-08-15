@@ -15,6 +15,22 @@
   </div>
   <%  }  %>
 </form>
+<h3>Following</h3>
+<button><a href='/profile/request'>Follow</a></button>
+<br />
+<form class="" action="/profile/req" method="post">
+  <%  for(let i=0; i<followReq.length; i++){  %>
+  <div class="">
+
+      <label><%= followReq[i].followRequestName %></label>
+      <button type="submit" name="remove" value= <%= followReq[i].followRequestName %> >remove</button>
+      <button type="submit" name="join" value= <%= followReq[i].followRequestName %> >join</button>
+
+  </div>
+  <%  }  %>
+</form>
+
+<br />
 <button><a href='/start'>Go Back</a></button>
 <button><a href='/'>Logout</a></button>
 

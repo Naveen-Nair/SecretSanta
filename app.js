@@ -22,12 +22,45 @@ const userSchema = new mongoose.Schema({
   password: String,
   invite: [{
     groupRequestId: String,
+  }],
+  followReq: [{
+    followRequestId:String,
+    followRequestName:String
+  }],
+  followers: [{
+    username:String,
+    userid:String
+  }],
+  following: [{
+    username:String,
+    userid:String
   }]
 
 
 })
 
 const User = mongoose.model('User',userSchema)
+
+
+//******************************************************************************************
+//groupSchema
+const groupSchema = new mongoose.Schema({
+  name:String,
+  date:Date,
+  regisDate:Date,
+  budget:Number,
+  location:String,
+
+  requestid:String,
+  users:[{
+    userid:String,
+    username:String
+  }]
+
+})
+
+const Group = mongoose.model('Group',groupSchema)
+
 
 //******************************************************************************************
 //to check if the person is authenticated
@@ -131,25 +164,6 @@ app.post('/login',(req,res)=>{
 })
 
 
-
-//******************************************************************************************
-//groupSchema
-const groupSchema = new mongoose.Schema({
-  name:String,
-  date:Date,
-  regisDate:Date,
-  budget:Number,
-  location:String,
-
-  requestid:String,
-  users:[{
-    userid:String,
-    username:String
-  }]
-
-})
-
-const Group = mongoose.model('Group',groupSchema)
 
 
 
@@ -487,23 +501,7 @@ app.post('/yourGroupinfo/invite/person',(req,res)=>{
 })
 
 //******************************************************************************************
-app.get('/profile',(req,res)=>{
-  User.findOne({_id:currentUserId},(err,user)=>{
-    if(err){
-      console.log(err)
-      res.render('error',{errorName:'Error!', locRoute:'/login'})
-    }else{
-      if(user){
-        res.render('h_profile', {invites : user.invite, name:user.username})
-
-      }else{
-        res.render('error',{errorName:'Error!', locRoute:'/login'})
-      }
-    }
-  })
-
-})
-
+//accept or reject group invites
 app.post('/profile',(req,res)=>{
   let remove = req.body.remove
   let join = req.body.join
@@ -596,7 +594,212 @@ app.post('/profile',(req,res)=>{
   }
 })
 
+//******************************************************************************************
+//follow requests
+app.get('/profile/request',(req,res)=>{
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err)
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
+    }else{
+      if(user){
+          res.render('h_profile_request',{id:currentUserId})
 
+      }else{
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }
+    }
+  })
+
+})
+
+app.post('/profile/request',(req,res)=>{
+  let email = req.body.email
+  let username = req.body.username
+  let requestId = String(req.body.id) //the value of the button is the request id of the group
+
+  if(email){
+    User.findOne({email:email},(err,user)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(user){
+          //the invites is sent to the
+          let inviteGr = {followRequestId: requestId, followRequestName:currentUserName}
+          user.followReq.push(inviteGr)
+          user.save();
+
+          res.render('error',{errorName:'Invited!', locRoute:'/profile'})
+
+
+        }else{
+          res.render('error',{errorName:'User Not Found!', locRoute:'/profile'})
+        }
+      }
+    })
+
+  }else if(username){
+    User.findOne({username:username},(err,user)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(user){
+          //the invites is sent to the
+          let inviteGr = {followRequestId: requestId, followRequestName:currentUserName}
+          user.followReq.push(inviteGr)
+          user.save();
+          res.render('error',{errorName:'Invited!', locRoute:'/profile'})
+
+        }else{
+          res.render('error',{errorName:'User Not Found!', locRoute:'/profile'})
+        }
+      }
+    })
+
+
+  }else{//both username and email are empty
+    res.render('error',{errorName:'Enter Username / Email', locRoute:'/yourGroup'})
+  }
+
+
+})
+//******************************************************************************************
+//accept or reject follow requests
+
+
+app.post('/profile/req',(req,res)=>{
+  let remove = req.body.remove
+  let join = req.body.join
+
+  if(remove){
+    User.findOne({username:remove},(err,followerUser)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(followerUser){
+          User.findOne({username:currentUserName},(err,currentUser)=>{
+            if(err){
+              console.log(err)
+            }else{
+              if(currentUser){
+
+                for(let i=0; i<currentUser.followReq.length; i++){
+
+                  if(currentUser.followReq[i].followRequestName===followerUser.username){
+
+                      //switch the invite to the last
+                      let temp = currentUser.followReq[currentUser.followReq.length-1]
+                      currentUser.followReq[currentUser.followReq.length-1] = currentUser.followReq[i]
+                      currentUser.followReq[i] = temp
+                      //pop the last
+                      currentUser.followReq.pop();
+                      //save the invites
+                      currentUser.save();
+
+                      res.redirect('/start')
+
+                  }
+                }
+              }
+            }
+          })
+
+
+        }else{
+          res.render('error',{errorName:'Error!', locRoute:'/login'})
+        }
+      }
+    })
+
+  }else if(join){
+    User.findOne({username:join},(err,followerUser)=>{
+      if(err){
+        console.log(err)
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }else{
+        if(followerUser){
+          User.findOne({username:currentUserName},(err,currentUser)=>{
+            if(err){
+              console.log(err)
+            }else{
+              if(currentUser){
+                for(let i=0; i<currentUser.followReq.length; i++){
+
+                  if(currentUser.followReq[i].followRequestName===followerUser.username){
+
+                      //switch the invite to the last
+                      let temp = currentUser.followReq[currentUser.followReq.length-1]
+                      currentUser.followReq[currentUser.followReq.length-1] = currentUser.followReq[i]
+                      currentUser.followReq[i] = temp
+                      //pop the last
+                      currentUser.followReq.pop();
+                      //save the invites
+
+
+                      let follow = {
+                        userid:String(followerUser._id),
+                        username:followerUser.username
+                      }
+
+                      console.log(follow)
+
+                      currentUser.followers.push(follow);
+                      currentUser.save();
+
+                      let following = {
+                        userid:String(currentUser._id),
+                        username:currentUser.username
+                      }
+                      console.log(following)
+
+                      followerUser.following.push(following);
+                      followerUser.save()
+
+                      res.redirect('/start')
+
+                  }
+                }
+              }
+            }
+          })
+
+
+        }else{
+          res.render('error',{errorName:'Error!', locRoute:'/login'})
+        }
+      }
+    })
+
+
+
+
+  }else {
+    res.render('error',{errorName:'Error!', locRoute:'/login'})
+  }
+})
+
+//******************************************************************************************
+//profile
+app.get('/profile',(req,res)=>{
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err)
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
+    }else{
+      if(user){
+        console.log(user.followReq)
+        res.render('h_profile', {invites : user.invite, name:user.username, followReq : user.followReq})
+
+      }else{
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }
+    }
+  })
+
+})
 
 //******************************************************************************************
 

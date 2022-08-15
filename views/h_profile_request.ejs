@@ -1,0 +1,23 @@
+<%- include("header") -%>
+
+<h1>Follow Request</h1>
+
+<form class="" action="/profile/request" method="post">
+  <div>
+    <input type="text" name="username" placeholder="Username" autocomplete="off">
+    <button type="submit" name="id" value=<%= id %>>Follow</button>
+  </div>
+  <label for="">or</label>
+  <div>
+    <input type="email" name="email" placeholder="email" autocomplete="off">
+    <button type="submit" name="id" value=<%= id %>>Follow</button>
+  </div>
+
+
+</form>
+
+
+<br />
+<button><a href="/profile">back</a></button>
+
+<%- include("footer") -%>
