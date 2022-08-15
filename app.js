@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 
+app.set('view engine','ejs');
+
+
 const md5 = require("md5");
 
 const bodyParser = require("body-parser")
@@ -9,9 +12,12 @@ app.use(bodyParser.urlencoded({extended:true}))
 const mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost:27017/usersDB')
 
+app.use(express.static("public"))
+
 //******************************************************************************************
 //mongoose user creation
 const userSchema = new mongoose.Schema({
+  username:String,
   email: String,
   password: String
 })
@@ -26,17 +32,17 @@ let currentUserId ='';
 //app get requests for the intial pages
 app.get("/",(req,res)=>{
   currentUserId=''
-  res.sendFile(__dirname + '/htmlFiles/index.html')
+  res.render('main_log')
 })
 
 app.get("/register",(req,res)=>{
   currentUserId=''
-  res.sendFile(__dirname + '/htmlFiles/register.html')
+  res.render('log_register')
 })
 
 app.get("/login",(req,res)=>{
   currentUserId=''
-  res.sendFile(__dirname + '/htmlFiles/login.html')
+  res.render('log_login')
 })
 
 //******************************************************************************************
@@ -45,25 +51,44 @@ app.get("/login",(req,res)=>{
 app.post("/register",(req,res)=>{
   console.log("Registering user");
 
+  const username = req.body.username;
   const email = req.body.email;
   const password = md5(req.body.password);
 
   User.findOne({email:email},(err,user)=>{//check if any user are there who has the same email
     if(err){
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
       console.log(err)
     } else{
       if(user){//if user exists
         console.log(user)
-        res.send("<h1>User Exists!</h1>"+"<button><a href='/register'>Go Back! </a></button>")
+        res.render('error',{errorName:'Email is already used!', locRoute:'/login'})
 
-      }else{//if user doesnt exist, ie new user can be created
-        const user = new User ({
-          email:email,
-          password:password
+      }else{//if user doesnt exist, check if username is used
+
+        User.findOne({username:username},(err,user)=>{
+          if(err){
+            res.render('error',{errorName:'Error!', locRoute:'/register'})
+            console.log(err)
+          }else{
+            if(user){
+              const user = new User ({
+                username:username,
+                email:email,
+                password:password
+              })
+              user.save()
+              currentUserId = user._id;
+              res.render('Secret Santa',{name:user.username}) //go to the start of the page
+
+            }else{
+              res.render('error',{errorName:'User name already exists!', locRoute:'/register'})
+            }
+          }
         })
-        user.save()
-        currentUserId = user._id;
-        res.sendFile(__dirname+'/htmlFiles/secretsanta/start.html') //go to the start of the page
+
+
+
 
       }
     }
@@ -83,17 +108,13 @@ app.post('/login',(req,res)=>{
 
           console.log("user authenticated")
           currentUserId = user._id;
-          res.sendFile(__dirname+'/htmlFiles/secretsanta/start.html') //go to the start of the page
-
+        res.render('Secret Santa',{name:user.username}) //go to the start of the page
         }else{//if password fails
-          res.send(
-            "<h1>Incorrect password!</h1>"+
-            "<button><a href='/login'>Go Back!</a></button>")
+          res.render('error',{errorName:'Incorrect Password!', locRoute:'/login'})
         }
 
       }else{//if the user with the same email does not exist
-        res.send("<h1>User Doesn't Exist</h1>"+"<button><a href='/register'>Register Now!</a></button>")
-      }
+    res.render('error',{errorName:'User does not exist', locRoute:'/register'})      }
     }
   })
 
@@ -176,7 +197,7 @@ app.post('/createGroup',(req,res)=>{
 
               const group = new Group({
                 name:name,
-                date:date,
+                date:date ,
                 regisDate:regisDate,
                 budget:budget,
                 location:location,
