@@ -16,10 +16,10 @@ Basic Mode:
 
 Hacker Mode:
 
-• Add a feature to invite people to the exchange.
+> Add a feature to invite people to the exchange.
 
 • Pair the people registered for the exchange after the deadline has passed.
 
 • Users should be able to create a wishlist by adding a product name, description, image, link to purchase the product, etc. They should also be able to delete and edit it.
 
-• Create a feature to follow others by searching their names or email addresses.
+> Create a feature to follow others by searching their names or email addresses.

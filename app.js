@@ -791,7 +791,7 @@ app.get('/profile',(req,res)=>{
     }else{
       if(user){
         console.log(user.followReq)
-        res.render('h_profile', {invites : user.invite, name:user.username, followReq : user.followReq})
+        res.render('h_profile', {invites : user.invite, name:user.username, followReq : user.followReq, followers : user.followers, following: user.following})
 
       }else{
         res.render('error',{errorName:'Error!', locRoute:'/login'})

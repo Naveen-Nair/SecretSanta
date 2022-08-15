@@ -30,7 +30,23 @@
   <%  }  %>
 </form>
 
+<h3>Followers</h3>
+<%  for(let i=0; i<followers.length; i++){  %>
+<div class="">
+    <p><%= followers[i].username %></p>
+</div>
+<%  }  %>
 <br />
+
+<h3>Following</h3>
+<%  for(let i=0; i<following.length; i++){  %>
+<div class="">
+    <p><%= following[i].username %></p>
+</div>
+<%  }  %>
+<br />
+
+
 <button><a href='/start'>Go Back</a></button>
 <button><a href='/'>Logout</a></button>
 
