@@ -19,7 +19,7 @@ app.use(express.static("public"))
 const userSchema = new mongoose.Schema({
   username:String,
   email: String,
-  password: String
+  password: String,
 })
 
 const User = mongoose.model('User',userSchema)
@@ -27,21 +27,25 @@ const User = mongoose.model('User',userSchema)
 //******************************************************************************************
 //to check if the person is authenticated
 let currentUserId ='';
+let currentUserName = '';
 
 //******************************************************************************************
 //app get requests for the intial pages
 app.get("/",(req,res)=>{
   currentUserId=''
+  currentUserName = '';
   res.render('log_main')
 })
 
 app.get("/register",(req,res)=>{
   currentUserId=''
+  currentUserName = '';
   res.render('log_register')
 })
 
 app.get("/login",(req,res)=>{
   currentUserId=''
+  currentUserName = '';
   res.render('log_login')
 })
 
@@ -58,7 +62,6 @@ app.post("/register",(req,res)=>{
   User.findOne({email:email},(err,user)=>{//check if any user are there who has the same email
     if(err){
       res.render('error',{errorName:'Error!', locRoute:'/login'})
-      console.log(err)
     } else{
       if(user){//if user exists
         console.log(user)
@@ -72,17 +75,19 @@ app.post("/register",(req,res)=>{
             console.log(err)
           }else{
             if(user){
-              const user = new User ({
-                username:username,
-                email:email,
-                password:password
-              })
-              user.save()
-              currentUserId = user._id;
-              res.render('ss_main',{name:user.username}) //go to the start of the page
+              res.render('error',{errorName:'User name already exists!', locRoute:'/register'})
 
             }else{
-              res.render('error',{errorName:'User name already exists!', locRoute:'/register'})
+                const user = new User ({
+                  username:username,
+                  email:email,
+                  password:password
+                })
+                user.save()
+                currentUserName = user.username;
+                currentUserId = user._id;
+                res.render('ss_main',{name:user.username}) //go to the start of the page
+
             }
           }
         })
@@ -101,12 +106,13 @@ app.post('/login',(req,res)=>{
 
   User.findOne({email:email},(err,user)=>{//check if users exist with the email
     if(err){
-      console.log(err)
+      res.render('error',{errorName:'Error!', locRoute:'/register'})
     } else{
       if(user){//if user exists
         if(user.password === password){//if the hashed password match
 
           console.log("user authenticated")
+          currentUserName = user.username;
           currentUserId = user._id;
         res.render('ss_main',{name:user.username}) //go to the start of the page
         }else{//if password fails
@@ -133,7 +139,9 @@ const groupSchema = new mongoose.Schema({
   location:String,
 
   requestid:String,
-  users:[{user:String}]
+  users:[{
+    userid:String
+  }]
 
 })
 
@@ -194,7 +202,7 @@ app.post('/createGroup',(req,res)=>{
   const date= req.body.date
   const regisDate= req.body.regisDate
   const budget= req.body.budget
-  const location= req.body.Location
+  const location= req.body.location
 
 
   //creation of the unique id (to request)
@@ -211,7 +219,7 @@ app.post('/createGroup',(req,res)=>{
     }else{
       if(group){//if group exists
         res.render('error',{errorName:'Group name already Exists!', locRoute:'/createGroup'})
-      }else{
+      }else{//if group doesnt exist
         console.log(currentUserId)
 
               const group = new Group({
@@ -224,8 +232,11 @@ app.post('/createGroup',(req,res)=>{
               })
               group.users.push(currentUserId)
 
+
               group.save()
-              res.redirect('/yourGroup')
+              res.redirect('/start')
+
+
           }
         }
 
@@ -269,10 +280,9 @@ app.post('/joinGroup',(req,res)=>{
           group.users.push(currentUserId)
           group.save()
 
-          res.redirect('/yourGroup')
-
+          res.redirect('/start')
         }else{
-          res.render('error',{errorName:'No such group exists!', locRoute:'/ss_main'})
+          res.render('error',{errorName:'No such group exists!', locRoute:'/start'})
         }
       }
     })
@@ -287,12 +297,42 @@ app.post('/joinGroup',(req,res)=>{
 app.get('/yourGroup',(req,res)=>{
   User.findOne({_id:currentUserId},(err,user)=>{
     if(err){
-      console.log(err);
+      console.log('heeelllooo')
       res.render('error',{errorName:'Error!', locRoute:'/login'})
 
     }else{
       if(user){    //if the user is authenticated
-        res.render('ss_yourGroup')
+
+        Group.find((err,groups)=>{
+          if(err){
+            console.log(err)
+          }else{
+            let yourGroups = []
+            if(groups){
+              for(let i=0; i<groups.length; i++){
+
+                let group = groups[i]
+                for(let j=0; j<group.users.length; j++){
+                  let username = group.users[j]
+
+
+                  if(String(username._id)==String(currentUserId)){
+                    //this user is a part of the group
+
+                   yourGroups.push(group.name)
+
+                  }
+                }
+
+              }
+              console.log(yourGroups)
+              res.render('ss_yourGroup',{groups:yourGroups})
+
+            }else{
+              console.log('error')
+            }
+          }
+        });
 
       }else{//if user with the userid does not exist
         res.render('error',{errorName:'Log in to access this site!', locRoute:'/login'})
@@ -302,6 +342,58 @@ app.get('/yourGroup',(req,res)=>{
   })
 })
 
+// function userNameArrGen (group){
+//   let users=[]
+//   for(i=0; i<group.users.length; i++){
+//     User.findOne({_id:group.users[i]},(err,user)=>{
+//       if(err){
+//         console.log(err)
+//         res.render('error',{errorName:'Error!', locRoute:'/yourGroup'})
+//       }else{
+//         if(user){
+//           users.push(user.username)
+//           console.log(users)
+//         }
+//       }
+//     })
+//   }
+//   return users
+// }
+
+app.post('/yourGroups',(req,res)=>{
+  let groupName = req.body.list;
+  console.log(groupName)
+  Group.findOne({name:groupName},(err,group)=>{
+
+    if(err){
+      res.render('error',{errorName:'Error!', locRoute:'/yourGroup'})
+    }else{
+
+      if(group){
+
+        let groupInfo = {
+          name: group.name,
+          date: group.date,
+          regisDate: group.regisDate,
+          budget: group.budget,
+          location: group.location,
+
+          requestid:group.requestid,
+          users : group.users
+
+        }
+
+
+        res.render("ss_yourGroupInfo",{groupInfo:groupInfo});
+
+
+      }else{
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+
+      }
+    }
+  })
+})
 
 
 

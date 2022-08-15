@@ -1,7 +1,18 @@
 <%- include("header") -%>
 
-<h1 class="group">Your Groups</h1>
+<form class="" action="/yourGroups" method="post">
+
+
+<%  for(let i=0; i<groups.length; i++){  %>
+<div class="">
+
+    <label><%= groups[i] %></label>
+    <button type="submit" name="list" value= <%= groups[i] %>  >Check</button>
+
+</div>
+<%  }  %>
+</form>
 <br />
 <button><a href="/start">back</a></button>
 
-<%- include("footer") -%>s
+<%- include("footer") -%>

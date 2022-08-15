@@ -1,0 +1,38 @@
+<%- include("header") -%>
+
+<h1><%= groupInfo.name %></h1>
+<br />
+  <p>
+    <span>Date : </span>
+    <%= groupInfo.date %>
+  </p>
+  <p>
+    <span>Registration Date : </span>
+    <%= groupInfo.regisDate %>
+  </p>
+  <p>
+    <span>Budget : </span>
+    <%= groupInfo.budget %>
+  </p>
+  <p>
+    <span>Location : </span>
+    <%= groupInfo.location %>
+  </p>
+  <p>
+    <span>Request Id : </span>
+    <%= groupInfo.requestid %>
+  </p>
+
+  <br />
+
+  <h3>User Ids: </h3>
+<%  for(let i=0; i<groupInfo.users.length; i++){  %>
+    <p>
+      <%=groupInfo.users[i]._id %>
+      </p>
+<%  }  %>
+
+<br />
+<button><a href="/start">back</a></button>
+
+<%- include("footer") -%>
