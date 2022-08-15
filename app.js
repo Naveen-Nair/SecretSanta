@@ -32,7 +32,7 @@ let currentUserId ='';
 //app get requests for the intial pages
 app.get("/",(req,res)=>{
   currentUserId=''
-  res.render('main_log')
+  res.render('log_main')
 })
 
 app.get("/register",(req,res)=>{
@@ -79,7 +79,7 @@ app.post("/register",(req,res)=>{
               })
               user.save()
               currentUserId = user._id;
-              res.render('Secret Santa',{name:user.username}) //go to the start of the page
+              res.render('ss_main',{name:user.username}) //go to the start of the page
 
             }else{
               res.render('error',{errorName:'User name already exists!', locRoute:'/register'})
@@ -108,13 +108,14 @@ app.post('/login',(req,res)=>{
 
           console.log("user authenticated")
           currentUserId = user._id;
-        res.render('Secret Santa',{name:user.username}) //go to the start of the page
+        res.render('ss_main',{name:user.username}) //go to the start of the page
         }else{//if password fails
           res.render('error',{errorName:'Incorrect Password!', locRoute:'/login'})
         }
 
       }else{//if the user with the same email does not exist
-    res.render('error',{errorName:'User does not exist', locRoute:'/register'})      }
+    res.render('error',{errorName:'User does not exist', locRoute:'/register'})
+      }
     }
   })
 
@@ -139,35 +140,52 @@ const groupSchema = new mongoose.Schema({
 const Group = mongoose.model('Group',groupSchema)
 
 
+
 //******************************************************************************************
 //get and post request to start.html
 app.get('/start',(req,res)=>{
   console.log(currentUserId)
 
-  if(currentUserId===''){//check if the user authenticated before
-    console.log('unauthenticated user tried to use')
-    //if not redirected to the login page
-    res.redirect('/login')
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err);
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
 
-  }else{
-    res.sendFile(__dirname + '/htmlFiles/secretsanta/start.html')
+    }else{
+      if(user){    //if the user is authenticated
+        res.render('ss_main',{name:user.username})
 
-  }
+      }else{//if user with the userid does not exist
+        res.render('error',{errorName:'Log in to access this site!', locRoute:'/login'})
+      }
+    }
+
+  })
+
+
 })
 
 
 //******************************************************************************************
 //get and post request to createGroup
 app.get('/createGroup',(req,res)=>{
-  if(currentUserId===''){//check if the user authenticated before
-    console.log('unauthenticated user tried to use')
-    //if not redirected to the login page
-    res.redirect('/login')
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err);
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
 
-  }else{
-    //if the user is authenticated, and the button is pressed from the html
-    res.sendFile(__dirname+'/htmlFiles/secretsanta/createGroup.html')
-  }
+    }else{
+        //if the user is authenticated, and the button is pressed from the html
+      if(user){
+        res.render('ss_createGroup')
+
+      }else{//if user with the userid does not exist
+        res.render('error',{errorName:'Log in to access this site!', locRoute:'/login'})
+      }
+    }
+
+  })
+
 })
 
 app.post('/createGroup',(req,res)=>{
@@ -188,10 +206,11 @@ app.post('/createGroup',(req,res)=>{
 
   Group.findOne({name:name},(err,group)=>{
     if(err){
+      res.render('error',{errorName:'Error!', locRoute:'/createGroup'})
       console.log(err)
     }else{
       if(group){//if group exists
-        res.send('<div>Group name already exists! try again</div>'+'<button><a href="/createGroup">Go back</a></button>')
+        res.render('error',{errorName:'Group name already Exists!', locRoute:'/createGroup'})
       }else{
         console.log(currentUserId)
 
@@ -207,12 +226,8 @@ app.post('/createGroup',(req,res)=>{
 
               group.save()
               res.redirect('/yourGroup')
-
-
           }
         }
-
-
 
     })
 })
@@ -222,17 +237,22 @@ app.post('/createGroup',(req,res)=>{
 //******************************************************************************************
 //get and post request to joinGroup
 app.get('/joinGroup',(req,res)=>{
-  console.log(currentUserId)
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err);
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
 
-  if(currentUserId===''){//check if the user authenticated before
-    console.log('unauthenticated user tried to use')
-    //if not redirected to the login page
-    res.redirect('/login')
+    }else{
+      if(user){    //if the user is authenticated
+        res.render('ss_joinGroup')
 
-  }else{
-    res.sendFile(__dirname + '/htmlFiles/secretsanta/joinGroup.html')
+      }else{//if user with the userid does not exist
+        res.render('error',{errorName:'Log in to access this site!', locRoute:'/login'})
+      }
+    }
 
-  }
+  })
+
 })
 
 app.post('/joinGroup',(req,res)=>{
@@ -240,17 +260,19 @@ app.post('/joinGroup',(req,res)=>{
 
     Group.findOne({requestid:uniqueid},(err,group)=>{
       if(err){
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
         console.log(err)
       }else{
         if(group){
+
           console.log(currentUserId)
           group.users.push(currentUserId)
           group.save()
 
-          res.send('done')
+          res.redirect('/yourGroup')
 
         }else{
-          res.send('<h1>No such group</h1>'+'<button><a href="/start">Go Back</a></button')
+          res.render('error',{errorName:'No such group exists!', locRoute:'/ss_main'})
         }
       }
     })
@@ -263,14 +285,21 @@ app.post('/joinGroup',(req,res)=>{
 //******************************************************************************************
 //get and post request to yourGroup
 app.get('/yourGroup',(req,res)=>{
-  if(currentUserId===''){//check if the user authenticated before
-    console.log('unauthenticated user tried to use')
-    //if not redirected to the login page
-    res.redirect('/login')
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err);
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
 
-  }else{
-    res.sendFile(__dirname + '/htmlFiles/secretsanta/yourGroup.html')
-  }
+    }else{
+      if(user){    //if the user is authenticated
+        res.render('ss_yourGroup')
+
+      }else{//if user with the userid does not exist
+        res.render('error',{errorName:'Log in to access this site!', locRoute:'/login'})
+      }
+    }
+
+  })
 })
 
 
