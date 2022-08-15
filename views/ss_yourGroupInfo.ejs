@@ -25,12 +25,17 @@
 
   <br />
 
-  <h3>User Ids: </h3>
+  <h3>Users: </h3>
 <%  for(let i=0; i<groupInfo.users.length; i++){  %>
     <p>
-      <%=groupInfo.users[i]._id %>
+      <%=groupInfo.users[i].username %>
       </p>
 <%  }  %>
+<br />
+
+<form class="" action="/yourGroupInfo/invite" method="post">
+  <button type="submit" name="submit">Invite</button>
+</form>
 
 <br />
 <button><a href="/start">back</a></button>

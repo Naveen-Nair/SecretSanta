@@ -112,9 +112,10 @@ app.post('/login',(req,res)=>{
         if(user.password === password){//if the hashed password match
 
           console.log("user authenticated")
+
           currentUserName = user.username;
           currentUserId = user._id;
-        res.render('ss_main',{name:user.username}) //go to the start of the page
+          res.redirect('/start')
         }else{//if password fails
           res.render('error',{errorName:'Incorrect Password!', locRoute:'/login'})
         }
@@ -140,7 +141,8 @@ const groupSchema = new mongoose.Schema({
 
   requestid:String,
   users:[{
-    userid:String
+    userid:String,
+    username:String
   }]
 
 })
@@ -230,7 +232,11 @@ app.post('/createGroup',(req,res)=>{
                 location:location,
                 requestid:uniqueid,
               })
-              group.users.push(currentUserId)
+              let a = {
+                userid: currentUserId,
+                username: currentUserName
+              }
+              group.users.push(a)
 
 
               group.save()
@@ -276,8 +282,11 @@ app.post('/joinGroup',(req,res)=>{
       }else{
         if(group){
 
-          console.log(currentUserId)
-          group.users.push(currentUserId)
+          let a = {
+            userid: currentUserId,
+            username: currentUserName
+          }
+          group.users.push(a)
           group.save()
 
           res.redirect('/start')
@@ -313,10 +322,10 @@ app.get('/yourGroup',(req,res)=>{
 
                 let group = groups[i]
                 for(let j=0; j<group.users.length; j++){
-                  let username = group.users[j]
 
 
-                  if(String(username._id)==String(currentUserId)){
+
+                  if(group.users[j].userid==currentUserId){
                     //this user is a part of the group
 
                    yourGroups.push(group.name)
@@ -342,25 +351,14 @@ app.get('/yourGroup',(req,res)=>{
   })
 })
 
-// function userNameArrGen (group){
-//   let users=[]
-//   for(i=0; i<group.users.length; i++){
-//     User.findOne({_id:group.users[i]},(err,user)=>{
-//       if(err){
-//         console.log(err)
-//         res.render('error',{errorName:'Error!', locRoute:'/yourGroup'})
-//       }else{
-//         if(user){
-//           users.push(user.username)
-//           console.log(users)
-//         }
-//       }
-//     })
-//   }
-//   return users
-// }
 
-app.post('/yourGroups',(req,res)=>{
+//******************************************************************************************
+//to get yourGroupInfo pages
+app.get('/yourGroupInfo',(req,res)=>{
+  res.render('error',{errorName:'Error!', locRoute:'/start'})
+})
+
+app.post('/yourGroupInfo',(req,res)=>{
   let groupName = req.body.list;
   console.log(groupName)
   Group.findOne({name:groupName},(err,group)=>{
@@ -395,8 +393,16 @@ app.post('/yourGroups',(req,res)=>{
   })
 })
 
+//******************************************************************************************
+//to invite to your group
 
+app.get('/yourGroupInfo/invite',(req,res)=>{
+  res.render('error',{errorName:'Error!', locRoute:'/start'})
+})
 
+app.post('/yourGroupInfo/invite',(req,res)=>{
+
+})
 
 
 
