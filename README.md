@@ -10,7 +10,7 @@ Basic Mode:
 
 > Generate a code which can be used by users to join an exchange.
 
-• Create a detailed page for each exchange which is visible to the participants, display details collected while creating it and the list of participants.
+> Create a detailed page for each exchange which is visible to the participants, display details collected while creating it and the list of participants.
 
 ---------------------------------------------------------------------------------------------------------------
 
