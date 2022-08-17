@@ -1,43 +1,74 @@
 <%- include("header") -%>
 
-<h1><%= groupInfo.name %></h1>
+<h1> <span class="user">group | </span> <%= groupInfo.name %>  </h1>
+
+<% if (groupInfo.shuffleDone==1){ %>
+    <h3>Registration is over! </h3>
+<%  } %>
+
 <br />
+<form class="wide" action="" method="">
   <p>
-    <span>Date : </span>
+    <span class=" red">Date |   </span>
     <%= groupInfo.date %>
   </p>
   <p>
-    <span>Registration Date : </span>
+    <span class=" red">Registration Date |   </span>
     <%= groupInfo.regisDate %>
   </p>
   <p>
-    <span>Budget : </span>
+    <span class=" red">Budget |   </span>
     <%= groupInfo.budget %>
   </p>
   <p>
-    <span>Location : </span>
+    <span class=" red">Location |   </span>
     <%= groupInfo.location %>
   </p>
   <p>
-    <span>Request Id : </span>
+    <span class=" red">Request Id |   </span>
     <%= groupInfo.requestid %>
   </p>
 
+
+</form>
+
+
   <br />
 
-  <h3>Users: </h3>
-<%  for(let i=0; i<groupInfo.users.length; i++){  %>
-    <p>
-      <%=groupInfo.users[i].username %>
-      </p>
+
+  <% if (groupInfo.shuffleDone!=1){ %>
+
+    <h3>Users: </h3>
+<%    for(let i=0; i<groupInfo.users.length; i++){  %>
+        <p>
+          <%=groupInfo.users[i].username %>
+        </p>
+<%      }  %>
+
+<%  }else{ %>
+
+    <h3>Paired Users: </h3>
+  <%    for(let i=0; i<groupInfo.users.length/2; i++){  %>
+    <%        if(i+1 < groupInfo.users.length){     %>
+            <p>
+              <%=groupInfo.users[i].username %>   -    <%=groupInfo.users[i+1].username %>
+            </p>
+    <%      }else{  %>
+                  <p>
+                  <%=groupInfo.users[i].username %>   -
+                </p>
+          <% }  %>
+      <%  }  %>
 <%  }  %>
 <br />
 
+<% if (groupInfo.shuffleDone!=1){ %>
 <form class="" action="/yourGroupInfo_invite" method="post">
-  <button type="submit" name="requestId" value = <%= String(groupInfo.requestid) %>>Invite</button>
+  <button class="less" type="submit" name="requestId" value = <%= String(groupInfo.requestid) %>>Invite</button>
 </form>
+<% } %>
 
 <br />
-<button><a href="/yourGroup">back</a></button>
+<button><a class="bold" href="/yourGroup">back</a></button>
 
 <%- include("footer") -%>

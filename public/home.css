@@ -1,5 +1,22 @@
+header, footer {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  padding:30px;
+  color:#0D7377;
+  font-size: 2rem;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+
+  background-color: #212121;
+
+}
+
 body {
-  background-color: #F0F2B6;
+  margin:0;
+}
+.body {
+  background-color:#0D7377;
   margin:0;
   display:flex;
   flex-direction: column;
@@ -7,49 +24,122 @@ body {
   align-items: center;
   align-text:center;
   padding:100px;
+
   font-family: 'Roboto', sans-serif;
 }
 h3{
   margin-bottom: 0;
-  color:#224B0C;
+  color:#212121;
+
 }
 
 h1{
   margin-top:10px;
-  color:#AC4425;
-  border-bottom: 5px dotted #224B0C;
+  color:#14FFEC;
+  filter: drop-shadow(4px 4px 4px #212121);
+
 }
 
 .JoinBottom {
   text-align: center;
-  color:#224B0C;
+  color:#323232;
+  font-weight: bold;
 }
 form {
-  border:3px dotted #AC4425;
-  padding:15px;
+  border:3px dotted #323232;
+  padding:25px;
   display:flex;
   justify-content: center;
   flex-direction: column;
   flex:0;
   margin:20px;
-  /* background-color: #AC4425; */
+  background-color: #323232;
+  width:30%;
+  text-align: center;
+  border-radius: 30px;
+  filter: drop-shadow(7px 10px 4px #212121);
 
+}
+
+label {
+  color:#14FFEC;
+}
+input {
+  border: 1px solid fade(white, 40%);
+background-color: #0D7377;
+color:white;
+padding:2px;
+}
+input::placeholder{
+  color:white;
+  opacity: 50%;
 }
 button {
 margin:20px;
+margin-top:40px;
 margin-bottom:15px;
-background-color: #224B0C;
-color: #C1D5A4;
+background-color: #14FFEC;
+color: #212121;
 padding:5px 10px;
-
+filter: drop-shadow(4px 4px 4px #212121);
 
 }
 
+
 a {
-  color:#C1D5A4;
+  color:#14FFEC;
   text-decoration: none;
 }
 
 .red{
-  color:#AC4425;
+  color:#14FFEC;
+}
+
+.blueText {
+  color:#0D7377;
+  width:50;
+}
+
+.user {
+
+  font-weight:200;
+}
+
+
+.blue{
+  background-color: #0D7377;
+}
+
+.round {
+  padding:10px;
+  border-radius: 10%;
+
+}
+
+.bold {
+    color:#323232;
+  font-weight: bold;
+}
+
+.groupName {
+  color:#323232;
+}
+
+.line {
+  border-bottom:1px dotted #323232;
+}
+.less {
+  margin-top:20px;
+}
+
+.wide{
+  width:70%;
+}
+
+form > p {
+  color:#0D7377;
+}
+
+form >h3 {
+  color:#14FFEC;
 }

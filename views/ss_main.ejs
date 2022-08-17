@@ -1,15 +1,18 @@
 <%- include("header") -%>
 
-<h1>Secret Santa</h1>
-<h3> <%= name %>  </h3>
+<h1> <span class="user">user | </span> <%= name %>  </h1>
 <br />
-<button><a href='/profile'>Your profile</a></button>
+<button class="round"><a class="bold" href='/profile'>Your profile</a></button>
 <br>
-<button><a href='/createGroup'>New Group</a></button>
-<button><a href='/yourGroup'>Your Groups</a></button>
-<button><a href='/joinGroup'>Join Group</a></button>
+<form class="" action="" method="">
+  <button class="blue"><a  href='/createGroup'>New Group</a></button>
+  <button class="blue"><a  href='/yourGroup'>Your Groups</a></button>
+  <button class="blue"><a  href='/joinGroup'>Join Group</a></button>
+
+</form>
+
 <br>
 
-<button><a href='/'>Logout</a></button>
+<button class="round"><a class="bold" href='/'>Logout</a></button>
 
 <%- include("footer") -%>

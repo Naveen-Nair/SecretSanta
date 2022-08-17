@@ -1,36 +1,57 @@
 <%- include("header") -%>
 
-<h1>Your profile</h1>
-<h3> <%= name %>  </h3>
-<br />
-<h3>Invites</h3>
+<h3>Your profile</h3>
+<h1> <span class="user">user | </span> <%= name %>  </h1>
+<button class="round"><a class= "bold" href='/profile_wishList'>Wish List</a></button>
+
+
 <form class="" action="/profile" method="post">
+
+  <h3>Invites</h3>
+  <%  if(invites.length==0){  %>
+    <p>No group invites!</p>
+  <% } %>
+
   <%  for(let i=0; i<invites.length; i++){  %>
   <div class="">
 
       <label><%= invites[i].groupRequestId %></label>
-      <button type="submit" name="remove" value= <%= invites[i].groupRequestId %> >remove</button>
-      <button type="submit" name="join" value= <%= invites[i].groupRequestId %> >join</button>
+      <button class="less" type="submit" name="remove" value= <%= invites[i].groupRequestId %> >remove</button>
+      <button class="less" type="submit" name="join" value= <%= invites[i].groupRequestId %> >join</button>
+      <% if(i != invites.length-1) { %>
+        <hr class="line" />
+      <%   }   %>
 
   </div>
   <%  }  %>
 </form>
-<h3>Following</h3>
-<button><a href='/profile_request'>Follow</a></button>
-<br />
+
 <form class="" action="/profile_req" method="post">
+  <h3>Follow requests</h3>
+  <button><a class="bold" href='/profile_request'>Follow</a></button>
+  <br />
+  <%  if(followReq.length==0){  %>
+    <p class="red">No follow requests!</p>
+  <% } %>
+
   <%  for(let i=0; i<followReq.length; i++){  %>
   <div class="">
 
       <label><%= followReq[i].followRequestName %></label>
-      <button type="submit" name="remove" value= <%= followReq[i].followRequestName %> >remove</button>
-      <button type="submit" name="join" value= <%= followReq[i].followRequestName %> >join</button>
+      <button class="blue" type="submit" name="remove" value= <%= followReq[i].followRequestName %> >remove</button>
+      <button class="blue" type="submit" name="join" value= <%= followReq[i].followRequestName %> >join</button>
+      <% if(i != followReq.length-1) { %>
+        <hr class="line" />
+      <%   }   %>
 
   </div>
   <%  }  %>
 </form>
 
-<h3>Followers</h3>
+<h3><span class="user">user | </span>Followers</h3>
+<%  if(followers.length==0){  %>
+  <p>No followers!</p>
+<% } %>
 <%  for(let i=0; i<followers.length; i++){  %>
 <div class="">
     <p><%= followers[i].username %></p>
@@ -38,7 +59,10 @@
 <%  }  %>
 <br />
 
-<h3>Following</h3>
+<h3><span class="user">user | </span>Following</h3>
+<%  if(following.length==0){  %>
+  <p>You're following no one!</p>
+<% } %>
 <%  for(let i=0; i<following.length; i++){  %>
 <div class="">
     <p><%= following[i].username %></p>
@@ -47,8 +71,7 @@
 <br />
 
 
-<button><a href='/start'>Go Back</a></button>
-<button><a href='/profile_wishList'>Wish List</a></button>
-<button><a href='/'>Logout</a></button>
+<button><a class="bold" href='/start'>Go Back</a></button>
+
 
 <%- include("footer") -%>

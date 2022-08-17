@@ -2,30 +2,28 @@
 
     <h1>Create group!</h1>
     <form class="" action="/createGroup" method="post">
-      <div class="">
+
         <label for="">Name of the group : </label>
-        <input type="text" name="name" value="" required>
-      </div>
-      <div class="">
+        <input type="text" name="name" value="" required placeholder="Group Name" autofocus>
+        <br />
         <label for="">Date : </label>
         <input type="date" name="date" value="" required pattern="\d{4}-\d{2}-\d{2}" placeholder="Date">
-      </div>
-      <div class="">
+        <br />
         <label for="">Registration date : </label>
         <input type="date" name="regisDate" value=""  required pattern="\d{4}-\d{2}-\d{2}">
-      </div>
-      <div class="">
+      <br />
+
         <label for="">Budget : </label>
-        <input type="number" name="budget" value="" required>
-      </div>
-      <div class="">
+        <input type="number" name="budget" value="" required placeholder="Budget">
+      <br />
+
         <label for="">Location : </label>
-        <input type="text" name="location" value="" required>
-      </div>
+        <input type="text" name="location" value="" required placeholder="Location">
+      <br />
       <button type="submit" name="submit">Submit</button>
 
     </form>
     <br />
-    <button><a href="/start">back</a></button>
+    <button><a class="bold"  href="/start">back</a></button>
 
 <%- include("footer") -%>

@@ -1,4 +1,12 @@
 <%- include("header") -%>
+<h1>Your Groups</h1>
+<% if(groups.length==0) { %>
+      <p>You're not in any groups!</p>
+      <form class="" action="index.html" method="">
+        <button><a href='/createGroup'>New Group</a></button>
+        <button><a href='/joinGroup'>Join Group</a></button>
+      </form>
+<%   }   %>
 
 <form class="" action="/yourGroupInfo" method="post">
 
@@ -6,8 +14,14 @@
 <%  for(let i=0; i<groups.length; i++){  %>
 <div class="">
 
-    <label><%= groups[i].name %></label>
-    <button type="submit" name="requestId" value= <%= groups[i].id %>  >Check</button>
+    <label ><%= groups[i].name %></label>
+    <button class="blue less" type="submit" name="requestId" value= <%= groups[i].id %>  >Check</button>
+
+    <% if(i != groups.length-1) { %>
+      <hr class="line" />
+    <%   }   %>
+
+
 
 </div>
 <%  }  %>
@@ -15,6 +29,6 @@
 
 
 <br />
-<button><a href="/start">back</a></button>
+<button><a class="bold"  href="/start">back</a></button>
 
 <%- include("footer") -%>

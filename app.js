@@ -57,12 +57,14 @@ const groupSchema = new mongoose.Schema({
   regisDate:Date,
   budget:Number,
   location:String,
+  shuffleDone:Number,
 
   requestid:String,
   users:[{
     userid:String,
     username:String
   }]
+
 
 })
 
@@ -77,9 +79,7 @@ let currentUserName = '';
 //******************************************************************************************
 //app get requests for the intial pages
 app.get("/",(req,res)=>{
-  currentUserId=''
-  currentUserName = '';
-  res.render('log_main')
+  res.redirect('/login')
 })
 
 app.get("/register",(req,res)=>{
@@ -251,6 +251,7 @@ app.post('/createGroup',(req,res)=>{
                 budget:budget,
                 location:location,
                 requestid:uniqueid,
+                shuffleDone:0
               })
               let a = {
                 userid: currentUserId,
@@ -301,15 +302,19 @@ app.post('/joinGroup',(req,res)=>{
         console.log(err)
       }else{
         if(group){
+          if(group.shuffleDone==0){
+            let a = {
+              userid: currentUserId,
+              username: currentUserName
+            }
+            group.users.push(a)
+            group.save()
 
-          let a = {
-            userid: currentUserId,
-            username: currentUserName
+            res.render('error',{errorName:'Group joined!', locRoute:'/start'})
+          }else{
+            res.render('error',{errorName:'Group registeration closed!', locRoute:'/start'})
+
           }
-          group.users.push(a)
-          group.save()
-
-          res.redirect('/start')
         }else{
           res.render('error',{errorName:'No such group exists!', locRoute:'/start'})
         }
@@ -403,9 +408,36 @@ app.post('/yourGroupInfo',(req,res)=>{
           users : group.users
 
         }
+              let today = new Date;
 
 
-        res.render("ss_yourGroupInfo",{groupInfo:groupInfo});
+        if(group.regisDate<today){
+          if(group.shuffleDone!=1){
+            group.shuffleDone=1;
+            group.users.sort(()=>Math.random()-0.5)
+            groupInfo = {
+              name: group.name,
+              date: group.date,
+              regisDate: group.regisDate,
+              budget: group.budget,
+              location: group.location,
+              shuffleDone:group.shuffleDone,
+
+              requestid:group.requestid,
+              users : group.users
+
+            }
+            console.log(groupInfo)
+            res.render("ss_yourGroupInfo",{groupInfo:groupInfo});
+
+          }else{
+            res.render("ss_yourGroupInfo",{groupInfo:groupInfo});
+          }
+        }else{
+          res.render("ss_yourGroupInfo",{groupInfo:groupInfo});
+        }
+
+
 
 
       }else{
@@ -751,8 +783,6 @@ app.post('/profile_req',(req,res)=>{
                         username:followerUser.username
                       }
 
-                      console.log(follow)
-
                       currentUser.followers.push(follow);
                       currentUser.save();
 
@@ -760,7 +790,6 @@ app.post('/profile_req',(req,res)=>{
                         userid:String(currentUser._id),
                         username:currentUser.username
                       }
-                      console.log(following)
 
                       followerUser.following.push(following);
                       followerUser.save()
