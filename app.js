@@ -9,10 +9,12 @@ const md5 = require("md5");
 const bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({extended:true}))
 
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/usersDB')
 
 app.use(express.static("public"))
+
+
 
 //******************************************************************************************
 //mongoose user creation
@@ -34,9 +36,14 @@ const userSchema = new mongoose.Schema({
   following: [{
     username:String,
     userid:String
+  }],
+  wishList: [{
+    username:String,
+    productName:String,
+    description:String,
+    imageLink:String,
+    purchaseLink:String
   }]
-
-
 })
 
 const User = mongoose.model('User',userSchema)
@@ -413,12 +420,12 @@ app.post('/yourGroupInfo',(req,res)=>{
 //to invite to your group
 
 //normally cant go to the page
-app.get('/yourGroupInfo/invite',(req,res)=>{
+app.get('/yourGroupInfo_invite',(req,res)=>{
   res.render('error',{errorName:'Error!', locRoute:'/login'})
 })
 
 //post reques from the ss_yourGroupInfo
-app.post('/yourGroupInfo/invite',(req,res)=>{
+app.post('/yourGroupInfo_invite',(req,res)=>{
   let requestId = req.body.requestId
 
   Group.findOne({requestid:requestId},(err,group)=>{
@@ -444,12 +451,12 @@ app.post('/yourGroupInfo/invite',(req,res)=>{
 //to invite a person to the group
 
 //normally cant go to the page
-app.get('/yourGroupInfo/invite/person',(req,res)=>{
+app.get('/yourGroupInfo_invite_person',(req,res)=>{
   res.render('error',{errorName:'Error!', locRoute:'/login'})
 })
 
 //post request from the ss_yourGroupInfo_invite
-app.post('/yourGroupinfo/invite/person',(req,res)=>{
+app.post('/yourGroupinfo_invite_person',(req,res)=>{
   let email = req.body.email
   let username = req.body.username
   let requestId = String(req.body.id) //the value of the button is the request id of the group
@@ -596,7 +603,7 @@ app.post('/profile',(req,res)=>{
 
 //******************************************************************************************
 //follow requests
-app.get('/profile/request',(req,res)=>{
+app.get('/profile_request',(req,res)=>{
   User.findOne({_id:currentUserId},(err,user)=>{
     if(err){
       console.log(err)
@@ -613,7 +620,7 @@ app.get('/profile/request',(req,res)=>{
 
 })
 
-app.post('/profile/request',(req,res)=>{
+app.post('/profile_request',(req,res)=>{
   let email = req.body.email
   let username = req.body.username
   let requestId = String(req.body.id) //the value of the button is the request id of the group
@@ -669,7 +676,7 @@ app.post('/profile/request',(req,res)=>{
 //accept or reject follow requests
 
 
-app.post('/profile/req',(req,res)=>{
+app.post('/profile_req',(req,res)=>{
   let remove = req.body.remove
   let join = req.body.join
 
@@ -780,6 +787,136 @@ app.post('/profile/req',(req,res)=>{
     res.render('error',{errorName:'Error!', locRoute:'/login'})
   }
 })
+//******************************************************************************************
+//profile
+
+app.get('/profile_wishList',(req,res)=>{
+  console.log('wishalist entered')
+  User.findOne({_id:currentUserId},(err,user)=>{
+    if(err){
+      console.log(err)
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
+    }else{
+      if(user){
+        res.render('h_profile_wishList',{name:currentUserName, userWishList:user.wishList});
+
+      }else{
+        res.render('error',{errorName:'Error!', locRoute:'/login'})
+      }
+    }
+  })
+})
+
+app.post('/profile_wishList',(req,res)=>{
+  const remove = req.body.delete;
+  const edit = req.body.edit;
+  const add = req.body.add;
+
+  if(remove){
+    User.findOne({username:currentUserName},(err,user)=>{
+      if(err){
+        console.log(err)
+      }else{
+        if(user){
+          for(let i=0; i<user.wishList.length; i++){
+
+            if(user.wishList[i]._id.toString()===remove){
+
+              let temp = user.wishList[user.wishList.length-1]
+              user.wishList[user.wishList.length-1] = user.wishList[i]
+              user.wishList[i] = temp
+              //pop the last
+              user.wishList.pop();
+              //save the invites
+              user.save();
+
+              res.render('error',{errorName:'Deleted!', locRoute:'/profile'})
+              }
+            }
+          }
+        }
+      })
+}else if(edit){
+  User.findOne({username:currentUserName},(err,user)=>{
+    if(err){
+      console.log(err)
+    }else{
+      if(user){
+        for(let i=0; i<user.wishList.length; i++){
+          if(user.wishList[i]._id.toString()===edit){
+
+            let wish = {
+              username:currentUserName,
+              productName:user.wishList[i].productName,
+              description:user.wishList[i].description,
+              imageLink:user.wishList[i].imageLink,
+              purchaseLink:user.wishList[i].purchaseLink
+            }
+
+
+
+            console.log(wish)
+
+            res.render('h_profile_wishList_add',{wishList:wish})
+            let temp = user.wishList[user.wishList.length-1]
+            user.wishList[user.wishList.length-1] = user.wishList[i]
+            user.wishList[i] = temp
+            //pop the last
+            user.wishList.pop();
+            //save the invites
+            user.save();
+            }
+          }
+        }
+      }
+    })
+  }else if(add){
+      let wish = {
+        username:currentUserName,
+        productName:'',
+        description:'',
+        imageLink:'',
+        purchaseLink:''
+      }
+      res.render('h_profile_wishList_add',{wishList:wish})
+
+    }else{
+      res.render('error',{errorName:'Error!', locRoute:'/login'})
+    }
+})
+
+app.post('/profile_wishList_add',(req,res)=>{
+  const username = req.body.submit;
+  const productName = req.body.productName;
+  const description = req.body.description;
+  const imageLink = req.body.imageLink;
+  const purchaseLink = req.body.purchaseLink;
+
+  let wish = {
+    username:username,
+    productName: productName,
+    description:description,
+    imageLink:imageLink,
+    purchaseLink:purchaseLink
+  }
+
+
+  User.findOne({username:username},(err,user)=>{
+    if(err){
+      console.log(err)
+    }else{
+      if(user){
+        user.wishList.push(wish)
+        user.save();
+        res.redirect('/profile')
+
+      }
+    }
+  })
+
+
+})
+
 
 //******************************************************************************************
 //profile
@@ -790,7 +927,6 @@ app.get('/profile',(req,res)=>{
       res.render('error',{errorName:'Error!', locRoute:'/login'})
     }else{
       if(user){
-        console.log(user.followReq)
         res.render('h_profile', {invites : user.invite, name:user.username, followReq : user.followReq, followers : user.followers, following: user.following})
 
       }else{

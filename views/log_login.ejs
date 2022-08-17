@@ -1,16 +1,23 @@
 <%- include("header") -%>
 
-    <h1>Login</h1>
-    <form class="" action="/login" method="post">
-      <div>
-        <input type="email" name="email" value="" placeholder="Email" required autofocus autocomplete="off">
-      </div>
-      <div>
-        <input type="password" name="password" value="" placeholder="Password" required autocomplete="off">
-      </div>
+  <h3>Secret Santa</h3>
 
-      <button type="submit" name="submit">Login!</button>
-    </form>
-    <span>Do not have an account? </span><a href="/register">Register!</a>
+<h1 class="heading">Log in</h1>
+<form class="" action="/login" method="post">
+  <div>
+    <input class="top" type="email" name="email" value="" placeholder="Email" required autofocus autocomplete="off">
+  </div>
+  <div>
+    <input class="bottom" type="password" name="password" value="" placeholder="Password" required autocomplete="off">
+  </div>
+
+  <button type="submit" name="submit">Login!</button>
+</form>
+<div class="JoinBottom">
+  <span>Don't have an account? </span><a class="red" href="/register">Register!</a>
+</div>
+
+
+
 
 <%- include("footer") -%>

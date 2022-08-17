@@ -1,0 +1,27 @@
+<%- include("header") -%>
+
+<h1><%= name %>'s Wish List</h1>
+<form class="" action="/profile_wishList" method="post">
+  <button type="submit" name="add" value=1 >add</button>
+  <%  for(let i=0; i<userWishList.length; i++){  %>
+  <div class="">
+
+      <h3><%= userWishList[i].productName %></h3>
+      <button type="submit" name="edit" value= <%= userWishList[i]._id %> >edit</button>
+      <button type="submit" name="delete" value= <%= userWishList[i]._id %> >delete</button>
+      <br />
+      <p><%= userWishList[i].description %></p>
+      <img src="<%= userWishList[i].imageLink %>" alt="">
+      <p>Purchase Link : <span><%= userWishList[i].purchaseLink %></span></p>
+
+  </div>
+  <%  }  %>
+
+</form>
+
+
+
+
+
+
+<%- include("footer") -%>

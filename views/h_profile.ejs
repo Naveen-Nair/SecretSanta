@@ -16,9 +16,9 @@
   <%  }  %>
 </form>
 <h3>Following</h3>
-<button><a href='/profile/request'>Follow</a></button>
+<button><a href='/profile_request'>Follow</a></button>
 <br />
-<form class="" action="/profile/req" method="post">
+<form class="" action="/profile_req" method="post">
   <%  for(let i=0; i<followReq.length; i++){  %>
   <div class="">
 
@@ -48,6 +48,7 @@
 
 
 <button><a href='/start'>Go Back</a></button>
+<button><a href='/profile_wishList'>Wish List</a></button>
 <button><a href='/'>Logout</a></button>
 
 <%- include("footer") -%>

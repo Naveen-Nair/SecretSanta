@@ -1,0 +1,24 @@
+<%- include("header") -%>
+
+    <h1>Add WishList!</h1>
+    <form class="" action="/profile_wishList_add" method="post">
+      <div class="">
+        <input type="text" name="productName" value="<%= wishList.productName %>" placeholder="Product Name" required>
+      </div>
+      <div class="">
+        <input type="text" name="description" value="<%= wishList.description %>" required placeholder="Description">
+      </div>
+      <div class="">
+        <input type="text" name="imageLink" value="<%= wishList.imageLink %>"  required placeholder="imageLink">
+      </div>
+      <div class="">
+        <input type="text" name="purchaseLink" value="<%= wishList.purchaseLink %>" required>
+      </div>
+
+      <button type="submit" name="submit" value="<%= wishList.username %>">Submit</button>
+
+    </form>
+    <br />
+    <button><a href="/profile">back</a></button>
+
+<%- include("footer") -%>
