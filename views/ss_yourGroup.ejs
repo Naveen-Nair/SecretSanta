@@ -3,10 +3,10 @@
 <% if(groups.length==0) { %>
       <p>You're not in any groups!</p>
       <form class="" action="index.html" method="">
-        <button><a href='/createGroup'>New Group</a></button>
-        <button><a href='/joinGroup'>Join Group</a></button>
+        <button class="blue"><a href='/createGroup'>New Group</a></button>
+        <button class="blue"><a href='/joinGroup'>Join Group</a></button>
       </form>
-<%   }   %>
+<%   }else{   %>
 
 <form class="" action="/yourGroupInfo" method="post">
 
@@ -26,6 +26,7 @@
 </div>
 <%  }  %>
 </form>
+<%   }  %>
 
 
 <br />
