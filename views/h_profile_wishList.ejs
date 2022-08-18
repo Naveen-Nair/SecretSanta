@@ -1,8 +1,9 @@
 <%- include("header") -%>
 
 <h1> <span class="user">Wish List | </span> <%= name %>  </h1>
-<button type="submit" name="add" value=1 >add</button>
+
 <form class="wide" action="/profile_wishList" method="post">
+  <button type="submit" name="add" value=1 >add</button>
 
   <%  for(let i=0; i<userWishList.length; i++){  %>
   <div class="">
